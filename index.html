@@ -26,6 +26,7 @@
         box-sizing: border-box;
         font-family: "YS Text", "Inter", "Helvetica Neue", "Helvetica", "Arial",
           sans-serif;
+        user-select: none;
       }
 
       button {
@@ -241,7 +242,7 @@
 
   <body>
     <div class="app">
-      <button class="logo">
+      <div class="logo">
         <svg
           width="305"
           height="45"
@@ -294,7 +295,7 @@
             fill="white"
           />
         </svg>
-      </button>
+      </div>
 
       <div class="background">
         <svg
@@ -581,17 +582,17 @@
         );
       }
 
-      const [fullscreenBtn] = document.getElementsByClassName("logo");
-
-      if (fullscreenBtn) {
-        fullscreenBtn.addEventListener("click", () => {
-          if (document.fullscreenElement) {
-            document.exitFullscreen();
-          } else {
-            document.documentElement.requestFullscreen();
-          }
-        });
-      }
+      // const [fullscreenBtn] = document.getElementsByClassName("logo");
+      //
+      // if (fullscreenBtn) {
+      //   fullscreenBtn.addEventListener("click", () => {
+      //     if (document.fullscreenElement) {
+      //       document.exitFullscreen();
+      //     } else {
+      //       document.documentElement.requestFullscreen();
+      //     }
+      //   });
+      // }
 
       const EVENTS = {
         gift: {
