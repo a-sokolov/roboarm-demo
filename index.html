@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Roboarm demo</title>
 
     <style>
@@ -186,7 +186,7 @@
     </style>
 
     <script>
-      function setFavicon() {
+      const setFavicon = () => {
         const link = document.createElement("link");
 
         link.type = "image/x-icon";
@@ -208,6 +208,33 @@
             func.apply(this, args);
           }, timeout);
         };
+      }
+
+      const switchLocale = (newLocale) => {
+        const localeAttrName = `data-locale-${newLocale}`;
+        const localeElements = document.querySelectorAll(`[${localeAttrName}]`);
+
+        for (const el of localeElements) {
+          el.innerText = el.attributes[localeAttrName].nodeValue;
+        }
+
+        const localeSign = document.getElementById('locale-sign');
+
+        if (localeSign) {
+          localeSign.innerText = newLocale === Lang.RU ? 'EN' : 'RU';
+        }
+      }
+
+      const runAnimation = () => {
+        const backgroundEl = document
+                .getElementsByClassName("background")
+                .item(0);
+
+        setTimeout(() => {
+          if (backgroundEl) {
+            backgroundEl.style.transform = "translateY(5px)";
+          }
+        });
       }
     </script>
   </head>
@@ -508,13 +535,7 @@
       <!-- Кнопка смены локализации -->
       <div class="locale">
         <button class="locale-btn">
-          <span id="locale-sign-ru" class="locale-sign" style="display: none"
-            >RU</span
-          >
-
-          <span id="locale-sign-en" class="locale-sign" style="display: none"
-            >EN</span
-          >
+          <span id="locale-sign" class="locale-sign">RU</span>
         </button>
       </div>
 
@@ -531,35 +552,22 @@
 
     <script>
       setFavicon();
+      runAnimation()
 
-      const backgroundEl = document
-        .getElementsByClassName("background")
-        .item(0);
-
-      setTimeout(() => {
-        if (backgroundEl) {
-          backgroundEl.style.transform = "translateY(5px)";
-        }
-      });
+      const Lang = {
+        RU: 'ru',
+        EN: 'en'
+      }
 
       const searchParams = new URLSearchParams(window.location.search);
-      const locale = searchParams.get("locale") ?? "ru";
-      const apiUrl = searchParams.get("api_url");
 
-      const newLocale = locale === "ru" ? "en" : "ru";
 
-      const localeAttrName = `data-locale-${locale}`;
-      const localeElements = document.querySelectorAll(`[${localeAttrName}]`);
-
-      for (const el of localeElements) {
-        el.innerText = el.attributes[localeAttrName].nodeValue;
+      let locale = searchParams.get("locale") ?? Lang.RU;
+      if (!Object.values(Lang).includes(locale)) {
+        locale = Lang.RU;
       }
 
-      const localeSign = document.getElementById(`locale-sign-${newLocale}`);
-
-      if (localeSign) {
-        localeSign.style.display = "contents";
-      }
+      switchLocale(locale);
 
       const [localeSwitchBtn] = document.getElementsByClassName("locale-btn");
 
@@ -567,14 +575,9 @@
         localeSwitchBtn.addEventListener(
           "click",
           () => {
-            const { origin, pathname } = window.location;
-            searchParams.set("locale", newLocale);
-
-            window.location.assign(
-              `${origin}${pathname}?${searchParams.toString()}`
-            );
+            locale = locale === Lang.RU ? Lang.EN : Lang.RU;
+            switchLocale(locale)
           },
-          { once: true }
         );
       }
 
@@ -606,6 +609,7 @@
       const TOTAL_STEPS = 10;
 
       const toastEl = document.getElementsByClassName("toast").item(0);
+      const apiUrl = searchParams.get("api_url");
 
       let progressEl;
       let showProgressInterval;
